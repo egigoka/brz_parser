@@ -3,11 +3,40 @@ class ProductsPage:
     page_number = None
     products = []
 
+    def dict(self):
+        representation = {}
+        attrs = dir(self)
+        for attr in attrs:
+            if attr.startswith("__") or attr == "dict":
+                continue
+            representation[attr] = eval(f"self.{attr}")
+        return representation
+
+    def __repr__(self):
+        from commands import Print
+        pretty = Print.prettify(self.dict(), quiet=True)
+        return f"Item: \n{pretty}"
+
 
 class Product:
     name = None
     link = None
     items = []
+
+    def dict(self):
+        representation = {}
+        attrs = dir(self)
+        for attr in attrs:
+            if attr.startswith("__") or attr == "dict":
+                continue
+            representation[attr] = eval(f"self.{attr}")
+        return representation
+
+    def __repr__(self):
+        from commands import Print
+        pretty = Print.prettify(self.dict(), quiet=True)
+        return f"Item: \n{pretty}"
+
 
 class Item:
     link = None
@@ -18,11 +47,11 @@ class Item:
     color = None
 
     photo = None
-    grade = None
+    grade_brz = None
     state = None
     battery_percent = None
     defect = None
-    complectation = None
+    included = None
     case_state = None
     display_state = None
     warranty = None
@@ -51,12 +80,12 @@ class Item:
     mdm = None
     esn = None
     esnd = None
-    simlock = None
+    sim_lock = None
     purchase_date = None
     coverage_date = None
     supplier = None
     invoice = None
-    grade = None
+    grade_nsys = None
     note = None
 
     front_camera = None
@@ -69,7 +98,7 @@ class Item:
     front_microphone = None
     video_microphone = None
     bottom_microphone = None
-    vibro = None
+    vibration = None
     lcd_pixels = None
     barometer = None
     accelerometer = None
@@ -85,13 +114,27 @@ class Item:
     volume_down = None
     volume_up = None
     home_button = None
-    ringsilent_button = None
-    touchid = None
-    multitouch = None
+    ring_silent_button = None
+    touch_id = None
+    multi_touch = None
 
     is_motherboard_original = None
     is_battery_original = None
     is_front_camera_original = None
     is_back_camera_original = None
     is_display_original = None
-    is_touchid_original = None
+    is_touch_id_original = None
+
+    def dict(self):
+        representation = {}
+        attrs = dir(self)
+        for attr in attrs:
+            if attr.startswith("__") or attr == "dict":
+                continue
+            representation[attr] = eval(f"self.{attr}")
+        return representation
+
+    def __repr__(self):
+        from commands import Print
+        pretty = Print.prettify(self.dict(), quiet=True)
+        return f"Item: \n{pretty}"
