@@ -48,7 +48,7 @@ class Item:
 
     photo = None
     grade_brz = None
-    state = None
+    grade_brz_verbose = None
     battery_percent = None
     defect = None
     included = None
@@ -115,7 +115,7 @@ class Item:
     volume_up = None
     home_button = None
     ring_silent_button = None
-    touch_id = None
+    face_touch_id = None
     multi_touch = None
 
     is_motherboard_original = None
