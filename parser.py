@@ -1,3 +1,5 @@
+import sys
+
 from bs4 import BeautifulSoup
 from commands import Str, File, Network, Print, Time, Random, Threading, Path, q, newline
 from models import ProductsPage, Product, Item
@@ -148,6 +150,10 @@ def process_product_page(product_to_process):
             for diagnostic_certificate_div in diagnostic_certificate_divs:
                 diagnostic_certificate_div_name = diagnostic_certificate_div.find("div", class_="col title")
                 diagnostic_certificate_div_value = diagnostic_certificate_div.find("div", class_="col")
+
+                print(f"diag cert div name: {diagnostic_certificate_div_name}")
+                print(f"diag cert div value: {diagnostic_certificate_div_value}")
+                sys.exit(0)
 
                 if diagnostic_certificate_div_name is not None and diagnostic_certificate_div_value is not None:
                     if diagnostic_certificate_div_name.text.strip() == "IMEI 1":
