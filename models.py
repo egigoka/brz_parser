@@ -1,7 +1,9 @@
 class ProductsPage:
-    link = None
-    page_number = None
-    products = []
+
+    def __init__(self):
+        self.link = None
+        self.products = []
+        self.page_number = None
 
     def dict(self):
         representation = {}
@@ -19,9 +21,12 @@ class ProductsPage:
 
 
 class Product:
-    name = None
-    link = None
-    items = []
+
+    def __init__(self):
+        self.link = None
+        self.name = None
+        self.items = []
+
 
     def dict(self):
         representation = {}
@@ -43,6 +48,7 @@ class Item:
 
     name = None
     id = None
+    code = None
     capacity = None
     color = None
 
@@ -90,6 +96,7 @@ class Item:
 
     front_camera = None
     back_camera = None
+    telephoto_camera = None
     flash = None
     three_d_touch = None
     touchscreen = None
