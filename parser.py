@@ -446,11 +446,23 @@ def get_additional_product_page_info(driver):
     info__content = product_page.find_element(By.CLASS_NAME, 'info__content')
     info__info = info__content.find_element(By.CLASS_NAME, 'info__info')
     Print.debug(f'{info__info.get_attribute("innerHTML")=}')
-    try:
-        price = info__info.find_element(By.CLASS_NAME, 'price')
-    except NoSuchElementException:
-        Console.blink()
-        raise
+
+    retry = 0
+    max_retry = 10
+    price = None
+    while True:
+        retry += 1
+
+        try:
+            price = info__info.find_element(By.CLASS_NAME, 'price')
+            break
+        except NoSuchElementException:
+            if retry < max_retry:
+                sleep_random(SLEEP_BETWEEN_BACKGROUND_ACTIONS, verbose=True)
+                continue
+            else:
+                Console.blink()
+                raise
 
 
     if price is None:
