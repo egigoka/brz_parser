@@ -162,3 +162,5 @@ cython_debug/
 # specific details
 url.txt
 output/
+previous/
+output_temp/

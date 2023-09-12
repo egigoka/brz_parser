@@ -1,7 +1,7 @@
 import sys
 
 from bs4 import BeautifulSoup
-from commands import Str, File, Network, Print, Time, Random, Threading, JsonDict, Console, Path, q
+from commands import Str, File, Network, Print, Time, Random, Threading, JsonDict, Console, Path, Dir, List, q
 from models import ProductsPage, Product, Item
 from urllib3.exceptions import MaxRetryError
 
@@ -14,6 +14,8 @@ from selenium.common.exceptions import (ElementClickInterceptedException, Timeou
                                         ElementNotInteractableException, NoSuchElementException)
 
 OUTPUT_FOLDER = "output"
+PREVIOUS_FOLDER = "previous"
+OUTPUT_TEMP_FOLDER = "output_temp"
 
 HEADLESS = True
 FIRST_PAGE = 1
@@ -682,11 +684,54 @@ while next_page:
 
     products_pages.append(products_page)
 
+if Dir.exists(OUTPUT_TEMP_FOLDER):
+    Dir.cleanup(OUTPUT_TEMP_FOLDER)
+
+
+
 for product in products:
-    output = JsonDict(Path.combine(".", OUTPUT_FOLDER, f"{product.name}.json"))
+    output = JsonDict(Path.combine(".", OUTPUT_TEMP_FOLDER, f"{product.name}.json"))
     output.clear()
     for item in product.items:
         output[item.code] = item.dict()
     output.save()
 
 q = q  # fuck PyCharm
+
+files = Dir.list_of_files(OUTPUT_FOLDER) + Dir.list_of_files(OUTPUT_TEMP_FOLDER)
+
+files = List.remove_duplicates(files)
+
+for file in files:
+    current_json = JsonDict(Path.combine(".", OUTPUT_TEMP_FOLDER, file))
+    previous_json = JsonDict(Path.combine('.', OUTPUT_FOLDER, file))
+
+    checked_codes = []
+
+    for code_current, item_current in current_json.items():
+
+        item_name = current_json.filename.replace(File.get_extension(current_json.filename), '') + ' ' + code_current
+
+        if code_current in previous_json.keys():
+            # run diff on sub elements
+            for key, current_value in item_current.items():
+                previous_value = previous_json[code_current][key]
+                if current_value != previous_value:
+                    print(f'In item {item_name} value {key} was changed from "{previous_value}" to "{current_value}"')
+        else:
+            print(f'New item {item_name} was added: {item_current}')
+        print()
+
+    for key, value in previous_json.items():
+        item_name = previous_json.filename.replace(File.get_extension(previous_json.filename), '') + ' ' + code_current
+
+        if key not in current_json.keys():
+            # it's deleted
+            print(f'Item {item_name} was deleted')
+
+# finished comparing without issues
+if Dir.exists(PREVIOUS_FOLDER):
+    Dir.delete(PREVIOUS_FOLDER)
+
+if Dir.exists(OUTPUT_FOLDER):
+    Dir.move(OUTPUT_FOLDER, PREVIOUS_FOLDER)
