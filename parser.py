@@ -1,7 +1,7 @@
 import sys
 
 from bs4 import BeautifulSoup
-from commands import Str, File, Network, Print, Time, Random, Threading, JsonDict, Console, q
+from commands import Str, File, Network, Print, Time, Random, Threading, JsonDict, Console, Path, q
 from models import ProductsPage, Product, Item
 from urllib3.exceptions import MaxRetryError
 
@@ -12,6 +12,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.common.exceptions import (ElementClickInterceptedException, TimeoutException,
                                         ElementNotInteractableException, NoSuchElementException)
+
+OUTPUT_FOLDER = "output"
 
 HEADLESS = True
 FIRST_PAGE = 1
@@ -681,7 +683,7 @@ while next_page:
     products_pages.append(products_page)
 
 for product in products:
-    output = JsonDict(f"{product.name}.json")
+    output = JsonDict(Path.combine(".", OUTPUT_FOLDER, f"{product.name}.json"))
     output.clear()
     for item in product.items:
         output[item.code] = item.dict()
