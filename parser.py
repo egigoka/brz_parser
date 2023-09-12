@@ -11,7 +11,10 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.common.exceptions import (ElementClickInterceptedException, TimeoutException,
-                                        ElementNotInteractableException, NoSuchElementException)
+                                        ElementNotInteractableException, NoSuchElementException,
+                                        StaleElementReferenceException)
+
+q = q  # fuck PyCharm
 
 OUTPUT_FOLDER = "output"
 PREVIOUS_FOLDER = "previous"
@@ -131,7 +134,8 @@ def process_certificate_page(current_item):
 
     try:
         test_results_divs = test_results_div.find_all("li",
-                                                  class_="d-flex justify-content-between list-group-item border-0 mr-3")
+                                                      class_="d-flex justify-content-between list-group-item border-0 "
+                                                             "mr-3")
     except AttributeError:
         test_results_divs = []
 
@@ -140,23 +144,26 @@ def process_certificate_page(current_item):
         test_results_div_item_value_image = test_results_div_item.find("img")
 
         if test_results_div_item_value_image is not None:
-            if test_results_div_item_value_image['src'] == ("data:image/svg+xml;base64, PHN2ZyB3aWR0aD0iMjMiIGhlaWdodD0"
-                                                            "iMjMiIHZpZXdCb3g9IjAgMCAyMyAyMyIgZmlsbD0ibm9uZSIgeG1sbnM9I"
-                                                            "mh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCjxnIGNsaXAtcGF0aD0"
-                                                            "idXJsKCNjbGlwMF8zODA2XzE1MjY4KSI+DQo8cGF0aCBmaWxsLXJ1bGU9I"
-                                                            "mV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE5LjgwNTIgNi4"
-                                                            "xODY4MkMyMC4yMTc4IDYuNjQwNzQgMjAuMTg0NCA3LjM0MzIyIDE5LjczM"
-                                                            "DUgNy43NTU4N0w5Ljk1NTk3IDE2LjY0MThDOS41Mjc5NCAxNy4wMzA5IDg"
-                                                            "uODcyOTEgMTcuMDI2MyA4LjQ1MDMyIDE2LjYzMTNMMi42NzQ0OCAxMS4yM"
-                                                            "zIzQzIuMjI2MzQgMTAuODEzNCAyLjIwMjY0IDEwLjExMDUgMi42MjE1NCA"
-                                                            "5LjY2MjM2QzMuMDQwNDUgOS4yMTQyMiAzLjc0MzMzIDkuMTkwNTIgNC4xO"
-                                                            "TE0NyA5LjYwOTQzTDkuMjE5MjkgMTQuMzA5MkwxOC4yMzYxIDYuMTEyMTF"
-                                                            "DMTguNjkgNS42OTk0NiAxOS4zOTI1IDUuNzMyOTEgMTkuODA1MiA2LjE4N"
-                                                            "jgyWiIgZmlsbD0iIzM3QTA2NCIvPg0KPC9nPg0KPGRlZnM+DQo8Y2xpcFB"
-                                                            "hdGggaWQ9ImNsaXAwXzM4MDZfMTUyNjgiPg0KPHJlY3Qgd2lkdGg9IjE3L"
-                                                            "jc3MTgiIGhlaWdodD0iMTcuNzcxOCIgZmlsbD0id2hpdGUiIHRyYW5zZm9"
-                                                            "ybT0idHJhbnNsYXRlKDIuMzIyMjQgMi40OTA5NykiLz4NCjwvY2xpcFBhd"
-                                                            "Gg+DQo8L2RlZnM+DQo8L3N2Zz4NCg=="):
+            if test_results_div_item_value_image['src'] == ("data:image/svg+xml;base64, PHN2ZyB3aWR0aD0iMjMiIGh"  # noqa
+                                                            "laWdodD0iMjMiIHZpZXdCb3g9IjAgMCAyMyAyMyIgZmlsbD0ib"  # noqa
+                                                            "m9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3Z"  # noqa
+                                                            "nIj4NCjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8zODA2XzE1M"  # noqa
+                                                            "jY4KSI+DQo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXA"  # noqa
+                                                            "tcnVsZT0iZXZlbm9kZCIgZD0iTTE5LjgwNTIgNi4xODY4MkMyM"  # noqa
+                                                            "C4yMTc4IDYuNjQwNzQgMjAuMTg0NCA3LjM0MzIyIDE5LjczMDU"  # noqa
+                                                            "gNy43NTU4N0w5Ljk1NTk3IDE2LjY0MThDOS41Mjc5NCAxNy4wM"  # noqa
+                                                            "zA5IDguODcyOTEgMTcuMDI2MyA4LjQ1MDMyIDE2LjYzMTNMMi4"  # noqa
+                                                            "2NzQ0OCAxMS4yMzIzQzIuMjI2MzQgMTAuODEzNCAyLjIwMjY0I"  # noqa
+                                                            "DEwLjExMDUgMi42MjE1NCA5LjY2MjM2QzMuMDQwNDUgOS4yMTQ"  # noqa
+                                                            "yMiAzLjc0MzMzIDkuMTkwNTIgNC4xOTE0NyA5LjYwOTQzTDkuM"  # noqa
+                                                            "jE5MjkgMTQuMzA5MkwxOC4yMzYxIDYuMTEyMTFDMTguNjkgNS4"  # noqa
+                                                            "2OTk0NiAxOS4zOTI1IDUuNzMyOTEgMTkuODA1MiA2LjE4NjgyW"  # noqa
+                                                            "iIgZmlsbD0iIzM3QTA2NCIvPg0KPC9nPg0KPGRlZnM+DQo8Y2x"  # noqa
+                                                            "pcFBhdGggaWQ9ImNsaXAwXzM4MDZfMTUyNjgiPg0KPHJlY3Qgd"  # noqa
+                                                            "2lkdGg9IjE3Ljc3MTgiIGhlaWdodD0iMTcuNzcxOCIgZmlsbD0"  # noqa
+                                                            "id2hpdGUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIuMzIyMjQgM"  # noqa
+                                                            "i40OTA5NykiLz4NCjwvY2xpcFBhdGg+DQo8L2RlZnM+DQo8L3N"  # noqa
+                                                            "2Zz4NCg=="):  # fucking pycharm
                 test_results_div_item_value = True
             else:
                 test_results_div_item_value = False
@@ -269,11 +276,12 @@ def process_certificate_page(current_item):
             raise ValueError(f"Unknown part_name: {part_name}")
 
 
-def process_products_page(url_to_process, page_number):
+def process_products_page(driver, url_to_process, page_number):
+    domain = Network.get_domain_of_url(url_to_process)
 
     Print.colored(f"start processing products page {page_number}: {url_to_process}", "green")
 
-    response = get_hydrated_page_from_selenium(url_to_process, product_page=False)
+    response = get_hydrated_page_from_selenium(driver, url_to_process, product_page=False)
 
     print(f"{len(response)=}")
 
@@ -283,7 +291,7 @@ def process_products_page(url_to_process, page_number):
     product_page.link = url_to_process
 
     soup = BeautifulSoup(response, 'html.parser')
-    
+
     # Find all <div> elements with the class "product_list_item product"
     product_divs = soup.find_all('div', class_='product_list_item product')
 
@@ -298,7 +306,7 @@ def process_products_page(url_to_process, page_number):
         for product_a_cnt, product_a in enumerate(product_a_s):
             product_link = product_a['href']
             product_name = product_a.text
-            
+
             product_full_url = f"https://{domain}{product_link}"
 
             current_product = Product()
@@ -309,14 +317,14 @@ def process_products_page(url_to_process, page_number):
 
     print(f"finish processing products page {page_number}")
     return product_page
-            
 
-def process_product_page(product_to_process):
+
+def process_product_page(driver, product_to_process):
     Print.colored(f"start processing product page {product_to_process.link}", "blue")
     # response = Network.get(product.link)
     # html_text = response.text
-    
-    html_text, additional_info = get_hydrated_page_from_selenium(product_to_process.link, product_page=True)
+
+    html_text, additional_info = get_hydrated_page_from_selenium(driver, product_to_process.link, product_page=True)
 
     soup = BeautifulSoup(html_text, 'html.parser')
 
@@ -336,21 +344,20 @@ def process_product_page(product_to_process):
             print(f"\t{items_div_cnt}th items div is empty")
             continue
 
-        print(f"\tprocessing {items_div_cnt}th item from product")
-        current_item = Item()
         if items_div_cnt > 0:
             raise ValueError("This div should be the only one")
 
         item_lis = items_div.find_all('li', class_='offers__item offer')
 
         print(f"{len(item_lis)=}")
-        for item_li in item_lis:
+        for item_li_cnt, item_li in enumerate(item_lis):
+
+            print(f"\tprocessing {item_li_cnt}th item from product")
+
+            current_item = Item()
 
             price = item_li.find("div", class_="main price__main")
-
             current_item.price = price.text.strip()
-
-            # print(f"\t{price.text}")
 
             possible_photo = item_li.find("div", class_="offer__preview-container")
 
@@ -395,13 +402,15 @@ def process_product_page(product_to_process):
             if current_item.certificate_link is not None:
                 process_certificate_page(current_item)
 
-        Print.debug(f"current_item = {current_item}")
+            Print.debug(f"current_item = {current_item}")
 
-        current_item.code = additional_info[items_div_cnt]["code"]
-        current_item.photo = additional_info[items_div_cnt]["picture"]
+            # TODO: something wrong here? need to parse selenium info item by item?
 
-        product_to_process.items.append(current_item)
-        print(f"\tfinish processing {items_div_cnt}th item from product")
+            current_item.code = additional_info[item_li_cnt]["code"]
+            current_item.photo = additional_info[item_li_cnt]["picture"]
+
+            product_to_process.items.append(current_item)
+            print(f"\tfinish processing {item_li_cnt}th item from product")
 
     print(f"finish processing product page")
 
@@ -471,7 +480,6 @@ def get_additional_product_page_info(driver):
                 Console.blink()
                 raise
 
-
     if price is None:
         raise ValueError("cannot find element 'price'")
     else:
@@ -524,12 +532,12 @@ def get_additional_product_page_info(driver):
 
         print(f'found {len(elements)} MOAR buttons, clicking dem al\'')
         for element_cnt, element in enumerate(elements):
-            print(f"clicking {element_cnt}st MOAR BUTTAN")
+            print(f"clicking {element_cnt}st MOAR button")
             element.click()
             sleep_random(SLEEP_BETWEEN_ACTIONS, verbose=True)
 
     elements = driver.find_elements(By.CLASS_NAME, 'offers__list')
-    
+
     for element_cnt, element in enumerate(elements):
         # li_elements = element.find_elements(By.TAG_NAME, 'li')
         li_elements = element.find_elements(By.XPATH, '*')
@@ -539,7 +547,7 @@ def get_additional_product_page_info(driver):
             print(f"found {li_cnt}th li element, clicking")
             driver.execute_script('arguments[0].scrollIntoView();', li)
             scroll_up_amount = Random.integer(-50, -100)
-            print(f"scroll up by {scroll_up_amount}")
+            print(f"scroll up by {abs(scroll_up_amount)}")
             driver.execute_script(f'window.scrollBy(0, {scroll_up_amount});')
             click_with_retries(li, f"{li_cnt}th li element")
             sleep_random(SLEEP_BETWEEN_ACTIONS, verbose=True)
@@ -554,13 +562,26 @@ def get_additional_product_page_info(driver):
             if code is None:
                 raise ValueError(f"Found not exactly 1 code: found {len(possible_codes)}")
 
-            picture_swiper_slides = driver.find_elements(By.CLASS_NAME, 'swiper-slide')
-            picture_swiper_slide = picture_swiper_slides[-1]
-            picture_swiper_slide_img = picture_swiper_slide.find_element(By.TAG_NAME, 'img')
-            picture_link = picture_swiper_slide_img.get_attribute('src')
+            retry = 0
+            max_retries = 10
+            picture_link = None
+            while True:
+                retry += 1
+                picture_swiper_slides = driver.find_elements(By.CLASS_NAME, 'swiper-slide')
+                picture_swiper_slide = picture_swiper_slides[-1]
+                picture_swiper_slide_img = picture_swiper_slide.find_element(By.TAG_NAME, 'img')
+                try:
+                    picture_link = picture_swiper_slide_img.get_attribute('src')
+                    break
+                except StaleElementReferenceException:
+                    if retry < max_retries:
+                        sleep_random(SLEEP_BETWEEN_BACKGROUND_ACTIONS, verbose=True)
+                        continue
+                    else:
+                        raise
 
             additional_info[li_cnt] = {"code": code, "picture": picture_link}
-            
+
             print(f"closing info popup")
             # Find the element with both class names
             close_popup_element = driver.find_element(By.CSS_SELECTOR, '.modal_close_icon.modal_close')
@@ -581,28 +602,27 @@ def get_additional_product_page_info(driver):
     Time.sleep(SLEEP_BEFORE_CLOSING_SELENIUM, verbose=True)
 
     return additional_info
-    
 
-def get_hydrated_page_from_selenium(url_to_hydrate, product_page=False):
 
-    # Set up Chrome options
-    chrome_options = Options()
-    # Use the following line if you want to run Chrome in headless mode (without a visible browser window)
-
-    if HEADLESS:
-        chrome_options.add_argument('--headless')
-
-    # Create a WebDriver instance
-    driver = webdriver.Chrome(options=chrome_options)
-
+def get_hydrated_page_from_selenium(driver, url_to_hydrate, product_page=False):
     # Load the URL
-    driver.get(url_to_hydrate)
+    retry = 0
+    max_retries = 10
+    while True:
+        retry += 1
+        try:
+            driver.get(url_to_hydrate)
+            break
+        except MaxRetryError:
+            if retry < max_retries:
+                sleep_random(SLEEP_BETWEEN_BACKGROUND_ACTIONS, verbose=True)
+                continue
+            else:
+                raise
 
     # Wait for JavaScript to finish executing (adjust the timeout as needed)
     timeout = 60  # in seconds
     wait = WebDriverWait(driver, timeout)
-    # wait.until(EC.presence_of_element_located((By.XPATH, '//element-you-want-to-wait-for')))
-    # wait.until(EC.presence_of_element_located((By.XPATH, '//body[@status="complete"]')))
     wait.until(lambda selenium_driver: selenium_driver.execute_script("return document.readyState === 'complete';"))
 
     if product_page and driver.current_url != url_to_hydrate:
@@ -615,123 +635,159 @@ def get_hydrated_page_from_selenium(url_to_hydrate, product_page=False):
     # Retrieve the hydrated HTML content
     html_hydrated_text = driver.page_source
 
-    # Close the browser
-    driver.quit()
-
     if product_page:
         return html_hydrated_text, additional_info
     else:
         return html_hydrated_text
 
 
-print("let's get this goin'")
+def main():
+    print("let's get this goin'")
 
-url, paged_url, _ = Str.nl(File.read("url.txt"))
+    url, paged_url, _ = Str.nl(File.read("url.txt"))
 
-domain = Network.get_domain_of_url(url)
+    products_pages = []
+    products = []
+    items = []
 
-products_pages = []
-products = []
-items = []
+    # Set up Chrome options
+    chrome_options = Options()
+    if HEADLESS:
+        chrome_options.add_argument('--headless')
 
-next_page = True
-current_page = 0
-while next_page:
-    current_page += 1
+    # Create a WebDriver instance
+    driver = webdriver.Chrome(options=chrome_options)
 
-    if current_page < FIRST_PAGE:
-        continue
-    elif LOAD_PAGES:
-        if current_page >= (FIRST_PAGE + LOAD_PAGES):
-            next_page = False
-            break
+    current_page = 0
+    while True:
+        current_page += 1
 
-    page_url = url if current_page == 1 else paged_url.replace("{{page}}", str(current_page))
+        if current_page < FIRST_PAGE:
+            continue  # skip pages
+        elif LOAD_PAGES:
+            if current_page >= (FIRST_PAGE + LOAD_PAGES):
+                break  # we've loaded enough pages
 
-    try:
-        products_page = process_products_page(page_url, current_page)
-    except ValueError:
-        next_page = False
-        break
+        page_url = url if current_page == 1 else paged_url.replace("{{page}}", str(current_page))
 
-    if len(products_page.products) == 0:
-        next_page = False
-        break
+        try:
+            products_page = process_products_page(driver, page_url, current_page)
+        except ValueError:
+            break  # no more pages with products
 
-    print()
-    print(f"{products_page.page_number=}")
-    print(f"{products_page.link=}")
-    print(f"{len(products_page.products)=}")
-    # print(f"{products_page.products[0]=}")
-    # print(f"{products_page.products[-1]=}")
-    print()
+        if len(products_page.products) == 0:
+            break  # no more pages with products
 
-    for product_cnt, product in enumerate(products_page.products):
-    
-        product = process_product_page(product)
-
-        print(f"{len(product.items)=}")
-
-        for item_cnt, item in enumerate(product.items):
-            item = process_item_page(item)
-
-            product.items[item_cnt] = item
-            # print(item)
-            items.append(item)
-
-        products_page.products[product_cnt] = product
-        products.append(product)
-
-    products_pages.append(products_page)
-
-if Dir.exists(OUTPUT_TEMP_FOLDER):
-    Dir.cleanup(OUTPUT_TEMP_FOLDER)
-
-
-
-for product in products:
-    output = JsonDict(Path.combine(".", OUTPUT_TEMP_FOLDER, f"{product.name}.json"))
-    output.clear()
-    for item in product.items:
-        output[item.code] = item.dict()
-    output.save()
-
-q = q  # fuck PyCharm
-
-files = Dir.list_of_files(OUTPUT_FOLDER) + Dir.list_of_files(OUTPUT_TEMP_FOLDER)
-
-files = List.remove_duplicates(files)
-
-for file in files:
-    current_json = JsonDict(Path.combine(".", OUTPUT_TEMP_FOLDER, file))
-    previous_json = JsonDict(Path.combine('.', OUTPUT_FOLDER, file))
-
-    checked_codes = []
-
-    for code_current, item_current in current_json.items():
-
-        item_name = current_json.filename.replace(File.get_extension(current_json.filename), '') + ' ' + code_current
-
-        if code_current in previous_json.keys():
-            # run diff on sub elements
-            for key, current_value in item_current.items():
-                previous_value = previous_json[code_current][key]
-                if current_value != previous_value:
-                    print(f'In item {item_name} value {key} was changed from "{previous_value}" to "{current_value}"')
-        else:
-            print(f'New item {item_name} was added: {item_current}')
+        print()
+        print(f"{products_page.page_number=}")
+        print(f"{products_page.link=}")
+        print(f"{len(products_page.products)=}")
+        # print(f"{products_page.products[0]=}")
+        # print(f"{products_page.products[-1]=}")
         print()
 
-    for key, value in previous_json.items():
-        item_name = previous_json.filename.replace(File.get_extension(previous_json.filename), '') + ' ' + code_current
+        for product_cnt, product in enumerate(products_page.products):
 
-        if key not in current_json.keys():
-            # it's deleted
-            print(f'Item {item_name} was deleted')
+            product = process_product_page(driver, product)
 
-# finished comparing without issues
-if Dir.exists(PREVIOUS_FOLDER):
+            print(f"{len(product.items)=}")
+
+            for item_cnt, item in enumerate(product.items):
+                item = process_item_page(item)
+
+                product.items[item_cnt] = item
+                # print(item)
+                items.append(item)
+
+            products_page.products[product_cnt] = product
+            products.append(product)
+
+        products_pages.append(products_page)
+
+    # Close the browser
+    driver.quit()
+
+    # diffing
+
+    if not Dir.exists(OUTPUT_TEMP_FOLDER):
+        Dir.create(OUTPUT_TEMP_FOLDER)
+    if not Dir.exists(OUTPUT_FOLDER):
+        Dir.create(OUTPUT_FOLDER)
+    if not Dir.exists(PREVIOUS_FOLDER):
+        Dir.create(PREVIOUS_FOLDER)
+
+    Dir.cleanup(OUTPUT_TEMP_FOLDER)
+
+    Print.debug("saving products")
+    for product in products:
+        Print.debug(f"\tsaving product {product.name}")
+        output = JsonDict(Path.combine(".", OUTPUT_TEMP_FOLDER, f"{product.name}.json"))
+        output.clear()
+        for item in product.items:
+            Print.debug(f"\t\tsaving item {item.code} {item.imei1} {item.imei2}")
+            output[item.code] = item.dict()
+        output.save()
+
+    previous_folder = PREVIOUS_FOLDER
+    if Dir.list_of_files(OUTPUT_FOLDER):
+        # if previous diff failed
+        previous_folder = OUTPUT_FOLDER
+
+    files = Dir.list_of_files(previous_folder) + Dir.list_of_files(OUTPUT_TEMP_FOLDER)
+
+    files = List.remove_duplicates(files)
+
+    print("<<DIFF START>>")
+
+    for file in files:
+        current_json = JsonDict(Path.combine(".", OUTPUT_TEMP_FOLDER, file))
+        previous_json = JsonDict(Path.combine('.', previous_folder, file))
+
+        for code_current, item_current in current_json.items():
+
+            item_name = current_json.filename.replace(File.get_extension(current_json.filename), '')
+            item_name = item_name.replace(Path.get_parent(item_name), "")
+            item_name += ' ' + code_current
+
+            something_changed = False
+
+            if code_current in previous_json.keys():
+                # run diff on sub elements
+                for key, current_value in item_current.items():
+                    try:
+                        previous_value = previous_json[code_current][key]
+                    except KeyError:
+                        previous_value = None
+                    if current_value != previous_value:
+                        print(
+                            f'In item {item_name} value {key} was changed from "{previous_value}" to "{current_value}"')
+                        something_changed = True
+            else:
+                print(f'New item {item_name} was added: {item_current}')
+                something_changed = True
+            if something_changed:
+                print()
+
+        for code_previous, item_previous in previous_json.items():
+            item_name = previous_json.filename.replace(File.get_extension(previous_json.filename), '')
+            item_name = item_name.replace(Path.get_parent(item_name), "")
+            item_name += ' ' + code_previous
+
+            if code_previous not in current_json.keys():
+                # it's deleted
+                print(f'Item {item_name} was deleted')
+                print()
+
+    print("<<DIFF END>>")
+
+    Print.debug(f"{len(products)=}")
+    Print.debug(f"{len(items)=}")
+
+    # finished comparing without issues
     Dir.delete(PREVIOUS_FOLDER)
-
-if Dir.exists(OUTPUT_FOLDER):
     Dir.move(OUTPUT_FOLDER, PREVIOUS_FOLDER)
+    Dir.move(OUTPUT_TEMP_FOLDER, OUTPUT_FOLDER)
+
+
+if __name__ == '__main__':
+    main()

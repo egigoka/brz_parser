@@ -27,7 +27,6 @@ class Product:
         self.name = None
         self.items = []
 
-
     def dict(self):
         representation = {}
         attrs = dir(self)
@@ -44,93 +43,95 @@ class Product:
 
 
 class Item:
-    link = None
 
-    name = None
-    id = None
-    code = None
-    capacity = None
-    color = None
+    def __init__(self):
+        self.link = None
 
-    photo = None
-    grade_brz = None
-    grade_brz_verbose = None
-    battery_percent = None
-    defect = None
-    included = None
-    case_state = None
-    display_state = None
-    warranty = None
+        self.name = None
+        self.id = None
+        self.code = None
+        self.capacity = None
+        self.color = None
 
-    certificate_link = None
+        self.photo = None
+        self.grade_brz = None
+        self.grade_brz_verbose = None
+        self.battery_percent = None
+        self.defect = None
+        self.included = None
+        self.case_state = None
+        self.display_state = None
+        self.warranty = None
 
-    imei1 = None
-    imei2 = None
-    sn = None
-    os_version = None
-    build_version = None
-    firmware = None
-    region = None
-    spec = None
-    carrier = None
-    model = None
-    mpn = None
-    vendor_state = None
-    last_nsys_tested = None
-    nsys_certificated = None
-    battery_health = None
-    battery_cycle = None
+        self.certificate_link = None
 
-    fmip = None
-    jail = None
-    mdm = None
-    esn = None
-    esnd = None
-    sim_lock = None
-    purchase_date = None
-    coverage_date = None
-    supplier = None
-    invoice = None
-    grade_nsys = None
-    note = None
+        self.imei1 = None
+        self.imei2 = None
+        self.sn = None
+        self.os_version = None
+        self.build_version = None
+        self.firmware = None
+        self.region = None
+        self.spec = None
+        self.carrier = None
+        self.model = None
+        self.mpn = None
+        self.vendor_state = None
+        self.last_nsys_tested = None
+        self.nsys_certificated = None
+        self.battery_health = None
+        self.battery_cycle = None
 
-    front_camera = None
-    back_camera = None
-    telephoto_camera = None
-    flash = None
-    three_d_touch = None
-    touchscreen = None
-    loud_speaker = None
-    speaker = None
-    front_microphone = None
-    video_microphone = None
-    bottom_microphone = None
-    vibration = None
-    lcd_pixels = None
-    barometer = None
-    accelerometer = None
-    compass = None
-    gyroscope = None
-    geolocation = None
-    network = None
-    bluetooth = None
-    wifi = None
-    sim_reader = None
-    proximity = None
-    light_sensor = None
-    volume_down = None
-    volume_up = None
-    home_button = None
-    ring_silent_button = None
-    face_touch_id = None
-    multi_touch = None
+        self.fmip = None
+        self.jail = None
+        self.mdm = None
+        self.esn = None
+        self.esnd = None
+        self.sim_lock = None
+        self.purchase_date = None
+        self.coverage_date = None
+        self.supplier = None
+        self.invoice = None
+        self.grade_nsys = None
+        self.note = None
 
-    is_motherboard_original = None
-    is_battery_original = None
-    is_front_camera_original = None
-    is_back_camera_original = None
-    is_display_original = None
-    is_touch_id_original = None
+        self.front_camera = None
+        self.back_camera = None
+        self.telephoto_camera = None
+        self.flash = None
+        self.three_d_touch = None
+        self.touchscreen = None
+        self.loud_speaker = None
+        self.speaker = None
+        self.front_microphone = None
+        self.video_microphone = None
+        self.bottom_microphone = None
+        self.vibration = None
+        self.lcd_pixels = None
+        self.barometer = None
+        self.accelerometer = None
+        self.compass = None
+        self.gyroscope = None
+        self.geolocation = None
+        self.network = None
+        self.bluetooth = None
+        self.wifi = None
+        self.sim_reader = None
+        self.proximity = None
+        self.light_sensor = None
+        self.volume_down = None
+        self.volume_up = None
+        self.home_button = None
+        self.ring_silent_button = None
+        self.face_touch_id = None
+        self.multi_touch = None
+
+        self.is_motherboard_original = None
+        self.is_battery_original = None
+        self.is_front_camera_original = None
+        self.is_back_camera_original = None
+        self.is_display_original = None
+        self.is_touch_id_original = None
 
     def dict(self):
         representation = {}
