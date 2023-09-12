@@ -125,8 +125,11 @@ def process_certificate_page(current_item):
 
     test_results_div = diagnostic_certificate_soup.find("div", class_="test-results")
 
-    test_results_divs = test_results_div.find_all("li",
+    try:
+        test_results_divs = test_results_div.find_all("li",
                                                   class_="d-flex justify-content-between list-group-item border-0 mr-3")
+    except AttributeError:
+        test_results_divs = []
 
     for test_results_div_item in test_results_divs:
         test_results_div_item_name = test_results_div_item.find("span").text.strip()
