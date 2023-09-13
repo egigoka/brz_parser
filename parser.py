@@ -408,6 +408,7 @@ def process_product_page(driver, product_to_process):
 
             current_item.code = additional_info[item_li_cnt]["code"]
             current_item.photo = additional_info[item_li_cnt]["picture"]
+            current_item.capacity = additional_info["capacity"]
 
             product_to_process.items.append(current_item)
             print(f"\tfinish processing {item_li_cnt}th item from product")
@@ -493,6 +494,45 @@ def get_additional_product_page_info(driver):
     t = Threading()
     t.add(close_jivo_site, args=([driver]))
     t.start()
+
+    # Find capacity
+    # Find all elements with class "tab_head_link"
+    elements = driver.find_elements(By.CLASS_NAME, 'tab_head_link')
+
+    print(f"finding element from {len(elements)=}")
+    # Filter the elements based on the "data-tab" attribute
+    retry = 0
+    max_retries = 10
+    while True:
+        retry += 1
+        desired_element = None
+        for element in elements:
+            data_tab = element.get_attribute('data-tab')
+            print(f"found element with {data_tab=}")
+            if data_tab == 'characteristics':
+                desired_element = element
+                break
+
+        if desired_element:
+            print("yay!")
+            # Do something with the desired element, like clicking or reading info
+            desired_element.click()
+            break
+        else:
+            print("nay :(")
+            if retry > max_retries:
+                raise KeyError("Cannot find desired element with data-tab = offers")
+            else:
+                sleep_random(SLEEP_BETWEEN_BACKGROUND_ACTIONS, verbose=True)
+
+    description__row_divs = driver.find_elements(By.CLASS_NAME, 'description__row')
+
+    for description__row in description__row_divs:
+        description__row_name = description__row.find_element(By.CLASS_NAME, 'description__name')
+        description__row_value = description__row.find_element(By.CLASS_NAME, 'description__value')
+        if description__row_name.text.strip() == "Внутренняя память":
+            additional_info["capacity"] = description__row_value.text.strip()
+            break
 
     # Find all elements with class "tab_head_link"
     elements = driver.find_elements(By.CLASS_NAME, 'tab_head_link')
