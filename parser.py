@@ -357,7 +357,18 @@ def process_product_page(driver, product_to_process):
             current_item = Item()
 
             price = item_li.find("div", class_="main price__main")
-            current_item.price = price.text.strip()
+            price_text = price.text
+
+            price_text = price_text.replace(newline, "\t")
+            price_text = price_text.strip("\t")
+            price_text = price_text.replace(" ", "")
+            price_text = price_text.replace("\t₸", "₸")
+            while "\t\t" in price_text:
+                price_text = price_text.replace("\t\t", "\t")
+
+            current_item.price = price_text
+
+            current_item.name = product_to_process.name
 
             possible_photo = item_li.find("div", class_="offer__preview-container")
 
