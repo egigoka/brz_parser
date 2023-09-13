@@ -1,7 +1,7 @@
 import sys
 
 from bs4 import BeautifulSoup
-from commands import Str, File, Network, Print, Time, Random, Threading, JsonDict, Console, Path, Dir, List, q
+from commands import Str, File, Network, Print, Time, Random, Threading, JsonDict, Console, Path, Dir, List, q, newline
 from models import ProductsPage, Product, Item
 from urllib3.exceptions import MaxRetryError
 
