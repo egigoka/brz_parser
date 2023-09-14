@@ -305,6 +305,8 @@ def process_products_page(driver, url_to_process, page_number):
         product_action = div.find("div", class_="product_action")
 
         if product_action.find("span", class_="text").text.strip() == "Уведомить":
+            Print.colored(f"\t{div_cnt}th product is out of stock, breaking processing products page {page_number}",
+                          "red")
             break
 
         for product_a_cnt, product_a in enumerate(product_a_s):
@@ -342,7 +344,8 @@ def process_product_page(driver, product_to_process):
 
     for items_div_cnt, items_div in enumerate(items_divs):
 
-        Print.debug(f"items_div = {items_div}")
+        if DEBUG:
+            Print.debug(f"items_div = {items_div}")
 
         if len(items_div.find_all()) == 0:
             print(f"\t{items_div_cnt}th items div is empty")
@@ -417,7 +420,8 @@ def process_product_page(driver, product_to_process):
             if current_item.certificate_link is not None:
                 process_certificate_page(current_item)
 
-            Print.debug(f"current_item = {current_item}")
+            if DEBUG:
+                Print.debug(f"current_item = {current_item}")
 
             # TODO: something wrong here? need to parse selenium info item by item?
 
@@ -477,7 +481,8 @@ def get_additional_product_page_info(driver):
     product_page = site_content.find_element(By.CLASS_NAME, 'product-page')
     info__content = product_page.find_element(By.CLASS_NAME, 'info__content')
     info__info = info__content.find_element(By.CLASS_NAME, 'info__info')
-    Print.debug(f'{info__info.get_attribute("innerHTML")=}')
+    if DEBUG:
+        Print.debug(f'{info__info.get_attribute("innerHTML")=}')
 
     retry = 0
     max_retry = 10
@@ -487,7 +492,7 @@ def get_additional_product_page_info(driver):
 
         try:
             price = info__info.find_element(By.CLASS_NAME, 'price')
-            break
+            break  # successfully found element
         except NoSuchElementException:
             if retry < max_retry:
                 sleep_random(SLEEP_BETWEEN_BACKGROUND_ACTIONS, verbose=True)
@@ -499,10 +504,12 @@ def get_additional_product_page_info(driver):
     if price is None:
         raise ValueError("cannot find element 'price'")
     else:
-        Print.debug(f"price.text.strip() = {price.text.strip()}")
+        if DEBUG:
+            Print.debug(f"price.text.strip() = {price.text.strip()}")
         no_stock = len(price.find_elements(By.CLASS_NAME, 'price-no-stock'))
-        Print.debug(f"{no_stock=}")
-        Print.debug(f'{price.get_attribute("innerHTML")=}')
+        if DEBUG:
+            Print.debug(f"{no_stock=}")
+            Print.debug(f'{price.get_attribute("innerHTML")=}')
         if no_stock or price.text.strip() == "Товар закончился":
             return additional_info
 
@@ -526,13 +533,13 @@ def get_additional_product_page_info(driver):
             print(f"found element with {data_tab=}")
             if data_tab == 'characteristics':
                 desired_element = element
-                break
+                break  # successfully found element
 
         if desired_element:
             print("yay!")
             # Do something with the desired element, like clicking or reading info
             desired_element.click()
-            break
+            break  # successfully clicked element
         else:
             print("nay :(")
             if retry > max_retries:
@@ -547,7 +554,7 @@ def get_additional_product_page_info(driver):
         description__row_value = description__row.find_element(By.CLASS_NAME, 'description__value')
         if description__row_name.text.strip() == "Внутренняя память":
             additional_info["capacity"] = description__row_value.text.strip()
-            break
+            break  # successfully found element
 
     # Find all elements with class "tab_head_link"
     elements = driver.find_elements(By.CLASS_NAME, 'tab_head_link')
@@ -564,13 +571,13 @@ def get_additional_product_page_info(driver):
             print(f"found element with {data_tab=}")
             if data_tab == 'offers':
                 desired_element = element
-                break
+                break  # successfully found element
 
         if desired_element:
             print("yay!")
             # Do something with the desired element, like clicking or reading info
             desired_element.click()
-            break
+            break  # successfully clicked element
         else:
             print("nay :(")
             if retry > max_retries:
@@ -583,7 +590,7 @@ def get_additional_product_page_info(driver):
 
         if len(elements) == 0:
             print("no MOAR buttons found")
-            break
+            break  # nothing to search further
 
         print(f'found {len(elements)} MOAR buttons, clicking dem al\'')
         for element_cnt, element in enumerate(elements):
@@ -627,7 +634,7 @@ def get_additional_product_page_info(driver):
                 picture_swiper_slide_img = picture_swiper_slide.find_element(By.TAG_NAME, 'img')
                 try:
                     picture_link = picture_swiper_slide_img.get_attribute('src')
-                    break
+                    break  # successfully found element
                 except StaleElementReferenceException:
                     if retry < max_retries:
                         sleep_random(SLEEP_BETWEEN_BACKGROUND_ACTIONS, verbose=True)
@@ -667,7 +674,7 @@ def get_hydrated_page_from_selenium(driver, url_to_hydrate, product_page=False):
         retry += 1
         try:
             driver.get(url_to_hydrate)
-            break
+            break  # successfully loaded page
         except MaxRetryError:
             if retry < max_retries:
                 sleep_random(SLEEP_BETWEEN_BACKGROUND_ACTIONS, verbose=True)
@@ -721,16 +728,19 @@ def main():
             continue  # skip pages
         elif LOAD_PAGES:
             if current_page >= (FIRST_PAGE + LOAD_PAGES):
+                Print.colored(f"Loaded {LOAD_PAGES} pages as asked, exiting", "green")
                 break  # we've loaded enough pages
 
         page_url = url if current_page == 1 else paged_url.replace("{{page}}", str(current_page))
 
         try:
             products_page = process_products_page(driver, page_url, current_page)
-        except ValueError:
+        except ValueError as e:
+            Print.colored(f"ValueError while processing products page {current_page}, exiting" + newline + e, "red")
             break  # no more pages with products
 
         if len(products_page.products) == 0:
+            Print.colored(f"Loaded {current_page} page, no products inside, exiting", "green")
             break  # no more pages with products
 
         print()
@@ -773,13 +783,16 @@ def main():
 
     Dir.cleanup(OUTPUT_TEMP_FOLDER)
 
-    Print.debug("saving products")
+    if DEBUG:
+        Print.debug("saving products")
     for product in products:
-        Print.debug(f"\tsaving product {product.name}")
+        if DEBUG:
+            Print.debug(f"\tsaving product {product.name}")
         output = JsonDict(Path.combine(".", OUTPUT_TEMP_FOLDER, f"{product.name}.json"))
         output.clear()
         for item in product.items:
-            Print.debug(f"\t\tsaving item {item.code} {item.imei1} {item.imei2}")
+            if DEBUG:
+                Print.debug(f"\t\tsaving item {item.code} {item.imei1} {item.imei2}")
             output[item.code] = item.dict()
         output.save()
 
@@ -835,8 +848,9 @@ def main():
 
     print("<<DIFF END>>")
 
-    Print.debug(f"{len(products)=}")
-    Print.debug(f"{len(items)=}")
+    Print.colored(f"Total products pages: {len(products_pages)}", "green")
+    Print.colored(f"Total products: {len(products)}", "green")
+    Print.colored(f"Total items: {len(items)}", "green")
 
     # finished comparing without issues
     Dir.delete(PREVIOUS_FOLDER)
