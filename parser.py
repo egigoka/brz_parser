@@ -25,18 +25,23 @@ FIRST_PAGE = 1
 LOAD_PAGES = None
 DEBUG = False
 
+
+def get_time_string():
+    return Time.dotted()[:-7]
+
+
 for arg in sys.argv:
     if arg.startswith("--first-page="):
-        Print.colored(f"First page: {arg}", "red")
+        Print.colored(get_time_string(), f"First page: {arg}", "red")
         FIRST_PAGE = Str.get_integers(arg)[0]
     elif arg.startswith("--load-pages="):
-        Print.colored(f"Load pages: {arg}", "red")
+        Print.colored(get_time_string(), f"Load pages: {arg}", "red")
         LOAD_PAGES = Str.get_integers(arg)[0]
     elif arg == "--window":
-        Print.colored("Window mode", "red")
+        Print.colored(get_time_string(), "Window mode", "red")
         HEADLESS = False
     elif arg == "--debug":
-        Print.colored("Debug enabled", "red")
+        Print.colored(get_time_string(), "Debug enabled", "red")
         DEBUG = True
 
 SLEEP_BETWEEN_ACTIONS = 3
@@ -55,7 +60,7 @@ def process_certificate_page(current_item):
     if current_item.certificate_link.strip() == "exists":
         return
 
-    Print.colored(f"\t\t\tfarming diagnostic link {current_item.certificate_link}", "blue")
+    Print.colored(get_time_string(), f"\t\t\tfarming diagnostic link {current_item.certificate_link}", "blue")
 
     diagnostic_certificate_response = Network.get(current_item.certificate_link)
 
@@ -284,7 +289,7 @@ def process_certificate_page(current_item):
 def process_products_page(driver, url_to_process, page_number):
     domain = Network.get_domain_of_url(url_to_process)
 
-    Print.colored(f"start processing products page {page_number}: {url_to_process}", "green")
+    Print.colored(get_time_string(), f"start processing products page {page_number}: {url_to_process}", "green")
 
     response = get_hydrated_page_from_selenium(driver, url_to_process, product_page=False)
 
@@ -307,7 +312,7 @@ def process_products_page(driver, url_to_process, page_number):
         product_action = div.find("div", class_="product_action")
 
         if product_action.find("span", class_="text").text.strip() == "Уведомить":
-            Print.colored(f"\t{div_cnt}th product is out of stock, breaking processing products page {page_number}",
+            Print.colored(get_time_string(), f"\t{div_cnt}th product is out of stock, breaking processing products page {page_number}",
                           "red")
             break
 
@@ -323,12 +328,12 @@ def process_products_page(driver, url_to_process, page_number):
 
             product_page.products.append(current_product)
 
-    Print.colored(f"finish processing products page {page_number}", "green")
+    Print.colored(get_time_string(), f"finish processing products page {page_number}", "green")
     return product_page
 
 
 def process_product_page(driver, product_to_process):
-    Print.colored(f"\tstart processing product page {product_to_process.link}", "blue")
+    Print.colored(get_time_string(), f"\tstart processing product page {product_to_process.link}", "blue")
     # response = Network.get(product.link)
     # html_text = response.text
 
@@ -355,7 +360,7 @@ def process_product_page(driver, product_to_process):
         for retry in range(1, max_retry+1):
             if len(items_div.find_all()) == 0:
                 if retry >= max_retry:
-                    Print.colored(f"\t\t{items_div_cnt}th items div is empty", "red")
+                    Print.colored(get_time_string(), f"\t\t{items_div_cnt}th items div is empty", "red")
                     is_empty = True
                     break
                 else:
@@ -373,7 +378,7 @@ def process_product_page(driver, product_to_process):
             print(f"{len(item_lis)=}")
         for item_li_cnt, item_li in enumerate(item_lis):
 
-            Print.colored(f"\t\tprocessing {item_li_cnt}th item from product", "blue")
+            Print.colored(get_time_string(), f"\t\tprocessing {item_li_cnt}th item from product", "blue")
 
             current_item = Item()
 
@@ -445,9 +450,9 @@ def process_product_page(driver, product_to_process):
 
             product_to_process.items.append(current_item)
 
-            Print.colored(f"\t\tfinish processing {item_li_cnt}th item from product", "blue")
+            Print.colored(get_time_string(), f"\t\tfinish processing {item_li_cnt}th item from product", "blue")
 
-    Print.colored(f"\tfinish processing product page", "blue")
+    Print.colored(get_time_string(), f"\tfinish processing product page", "blue")
 
     return product_to_process
 
@@ -733,7 +738,7 @@ def get_hydrated_page_from_selenium(driver, url_to_hydrate, product_page=False):
 
 
 def main():
-    Print.colored("Start processing", "green")
+    Print.colored(get_time_string(), "Start processing", "green")
 
     url, paged_url, _ = Str.nl(File.read("url.txt"))
 
@@ -757,7 +762,7 @@ def main():
             continue  # skip pages
         elif LOAD_PAGES:
             if current_page >= (FIRST_PAGE + LOAD_PAGES):
-                Print.colored(f"Loaded {LOAD_PAGES} pages as asked, exiting", "green")
+                Print.colored(get_time_string(), f"Loaded {LOAD_PAGES} pages as asked, exiting", "green")
                 break  # we've loaded enough pages
 
         page_url = url if current_page == 1 else paged_url.replace("{{page}}", str(current_page))
@@ -765,12 +770,12 @@ def main():
         try:
             products_page = process_products_page(driver, page_url, current_page)
         except ValueError as e:
-            Print.colored(f"ValueError while processing products page {current_page}, exiting" + newline + e, "red")
+            Print.colored(get_time_string(), f"ValueError while processing products page {current_page}, exiting" + newline + e, "red")
             break  # no more pages with products
 
         # sometimes pages isn't sorted correctly
         # if len(products_page.products) == 0:
-        #     Print.colored(f"Loaded {current_page} page, no products inside, exiting", "green")
+        #     Print.colored(get_time_string(), f"Loaded {current_page} page, no products inside, exiting", "green")
         #     break  # no more pages with products
 
         if DEBUG:
@@ -876,9 +881,9 @@ def main():
 
     print("<<DIFF END>>")
 
-    Print.colored(f"Total products pages: {len(products_pages)}", "green")
-    Print.colored(f"Total products: {len(products)}", "green")
-    Print.colored(f"Total items: {len(items)}", "green")
+    Print.colored(get_time_string(), f"Total products pages: {len(products_pages)}", "green")
+    Print.colored(get_time_string(), f"Total products: {len(products)}", "green")
+    Print.colored(get_time_string(), f"Total items: {len(items)}", "green")
 
     # finished comparing without issues
     Dir.delete(PREVIOUS_FOLDER)
