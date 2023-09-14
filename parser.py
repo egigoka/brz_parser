@@ -23,6 +23,7 @@ OUTPUT_TEMP_FOLDER = "output_temp"
 HEADLESS = True
 FIRST_PAGE = 1
 LOAD_PAGES = None
+DEBUG = False
 
 for arg in sys.argv:
     if arg.startswith("--first-page="):
@@ -34,6 +35,9 @@ for arg in sys.argv:
     elif arg == "--window":
         Print.colored("Window mode", "red")
         HEADLESS = False
+    elif arg == "--debug":
+        Print.colored("Debug enabled", "red")
+        DEBUG = True
 
 SLEEP_BETWEEN_ACTIONS = 3
 SLEEP_BETWEEN_BACKGROUND_ACTIONS = 1
