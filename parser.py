@@ -55,7 +55,7 @@ def process_certificate_page(current_item):
     if current_item.certificate_link.strip() == "exists":
         return
 
-    Print.colored(f"\t\tfarming diagnostic link {current_item.certificate_link}", "blue")
+    Print.colored(f"\t\t\tfarming diagnostic link {current_item.certificate_link}", "blue")
 
     diagnostic_certificate_response = Network.get(current_item.certificate_link)
 
@@ -328,7 +328,7 @@ def process_products_page(driver, url_to_process, page_number):
 
 
 def process_product_page(driver, product_to_process):
-    Print.colored(f"start processing product page {product_to_process.link}", "blue")
+    Print.colored(f"\tstart processing product page {product_to_process.link}", "blue")
     # response = Network.get(product.link)
     # html_text = response.text
 
@@ -350,8 +350,20 @@ def process_product_page(driver, product_to_process):
         if DEBUG:
             Print.debug(f"items_div = {items_div}")
 
-        if len(items_div.find_all()) == 0:
-            Print.colored(f"\t{items_div_cnt}th items div is empty", "red")
+        retry = 0
+        max_retry = 10
+        is_empty = False
+        while True:
+            retry += 1
+            if len(items_div.find_all()) == 0:
+                if retry > max_retry:
+                    Print.colored(f"\t\t{items_div_cnt}th items div is empty", "red")
+                    is_empty = True
+                    break
+                else:
+                    sleep_random(SLEEP_BETWEEN_BACKGROUND_ACTIONS)
+                    continue
+        if is_empty:
             continue
 
         if items_div_cnt > 0:
@@ -363,7 +375,7 @@ def process_product_page(driver, product_to_process):
             print(f"{len(item_lis)=}")
         for item_li_cnt, item_li in enumerate(item_lis):
 
-            Print.colored(f"\tprocessing {item_li_cnt}th item from product", "blue")
+            Print.colored(f"\t\tprocessing {item_li_cnt}th item from product", "blue")
 
             current_item = Item()
 
@@ -435,9 +447,9 @@ def process_product_page(driver, product_to_process):
 
             product_to_process.items.append(current_item)
 
-            Print.colored(f"\tfinish processing {item_li_cnt}th item from product", "blue")
+            Print.colored(f"\t\tfinish processing {item_li_cnt}th item from product", "blue")
 
-    Print.colored(f"finish processing product page", "blue")
+    Print.colored(f"\tfinish processing product page", "blue")
 
     return product_to_process
 
