@@ -350,13 +350,11 @@ def process_product_page(driver, product_to_process):
         if DEBUG:
             Print.debug(f"items_div = {items_div}")
 
-        retry = 0
         max_retry = 10
         is_empty = False
-        while True:
-            retry += 1
+        for retry in range(1, max_retry+1):
             if len(items_div.find_all()) == 0:
-                if retry > max_retry:
+                if retry >= max_retry:
                     Print.colored(f"\t\t{items_div_cnt}th items div is empty", "red")
                     is_empty = True
                     break
@@ -770,9 +768,10 @@ def main():
             Print.colored(f"ValueError while processing products page {current_page}, exiting" + newline + e, "red")
             break  # no more pages with products
 
-        if len(products_page.products) == 0:
-            Print.colored(f"Loaded {current_page} page, no products inside, exiting", "green")
-            break  # no more pages with products
+        # sometimes pages isn't sorted correctly
+        # if len(products_page.products) == 0:
+        #     Print.colored(f"Loaded {current_page} page, no products inside, exiting", "green")
+        #     break  # no more pages with products
 
         if DEBUG:
             print()
