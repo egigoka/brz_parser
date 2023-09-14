@@ -24,7 +24,7 @@ HEADLESS = True
 FIRST_PAGE = 1
 LOAD_PAGES = None
 DEBUG = False
-MAX_RETRIES = 20
+MAX_RETRIES = 40
 
 
 def get_time_string():
@@ -313,7 +313,8 @@ def process_products_page(driver, url_to_process, page_number):
         product_action = div.find("div", class_="product_action")
 
         if product_action.find("span", class_="text").text.strip() == "Уведомить":
-            Print.colored(get_time_string(), f"\t{div_cnt}th product is out of stock, breaking processing products page {page_number}",
+            Print.colored(get_time_string(),
+                          f"\t{div_cnt}th product is out of stock, breaking processing products page {page_number}",
                           "red")
             break
 
@@ -770,7 +771,8 @@ def main():
         try:
             products_page = process_products_page(driver, page_url, current_page)
         except ValueError as e:
-            Print.colored(get_time_string(), f"ValueError while processing products page {current_page}, exiting" + newline + e, "red")
+            Print.colored(get_time_string(),
+                          f"ValueError while processing products page {current_page}, exiting" + newline + e, "red")
             break  # no more pages with products
 
         # sometimes pages isn't sorted correctly
