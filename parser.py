@@ -518,8 +518,7 @@ def get_additional_product_page_info(driver):
                 sleep_random(SLEEP_BETWEEN_BACKGROUND_ACTIONS, verbose=True)
                 continue
             else:
-                Console.blink()
-                raise
+                break  # cannot find element
 
     if price is None:
         raise ValueError("cannot find element 'price'")
