@@ -68,7 +68,8 @@ def process_certificate_page(current_item):
     info_div = certificate_body.find_all("div", class_="row")[2]
 
     diagnostic_certificate_divs = info_div.find_all("div", class_="row")
-    print(f"\t\t{len(diagnostic_certificate_divs)=}")
+    if DEBUG:
+        print(f"\t\t{len(diagnostic_certificate_divs)=}")
     for diagnostic_certificate_div in diagnostic_certificate_divs:
         diagnostic_certificate_div_name = diagnostic_certificate_div.find("span", class_="col title")
         diagnostic_certificate_div_value = diagnostic_certificate_div.find_all("span", class_="col")[1]
@@ -287,7 +288,8 @@ def process_products_page(driver, url_to_process, page_number):
 
     response = get_hydrated_page_from_selenium(driver, url_to_process, product_page=False)
 
-    print(f"{len(response)=}")
+    if DEBUG:
+        print(f"{len(response)=}")
 
     product_page = ProductsPage()
 
@@ -321,7 +323,7 @@ def process_products_page(driver, url_to_process, page_number):
 
             product_page.products.append(current_product)
 
-    print(f"finish processing products page {page_number}")
+    Print.colored(f"finish processing products page {page_number}", "green")
     return product_page
 
 
@@ -340,7 +342,8 @@ def process_product_page(driver, product_to_process):
 
     items_divs = soup.find_all('div', class_='offers__list')
 
-    print(f"{len(items_divs)=}")
+    if DEBUG:
+        print(f"{len(items_divs)=}")
 
     for items_div_cnt, items_div in enumerate(items_divs):
 
@@ -348,7 +351,7 @@ def process_product_page(driver, product_to_process):
             Print.debug(f"items_div = {items_div}")
 
         if len(items_div.find_all()) == 0:
-            print(f"\t{items_div_cnt}th items div is empty")
+            Print.colored(f"\t{items_div_cnt}th items div is empty", "red")
             continue
 
         if items_div_cnt > 0:
@@ -356,10 +359,11 @@ def process_product_page(driver, product_to_process):
 
         item_lis = items_div.find_all('li', class_='offers__item offer')
 
-        print(f"{len(item_lis)=}")
+        if DEBUG:
+            print(f"{len(item_lis)=}")
         for item_li_cnt, item_li in enumerate(item_lis):
 
-            print(f"\tprocessing {item_li_cnt}th item from product")
+            Print.colored(f"\tprocessing {item_li_cnt}th item from product", "blue")
 
             current_item = Item()
 
@@ -430,24 +434,18 @@ def process_product_page(driver, product_to_process):
             current_item.capacity = additional_info["capacity"]
 
             product_to_process.items.append(current_item)
-            print(f"\tfinish processing {item_li_cnt}th item from product")
 
-    print(f"finish processing product page")
+            Print.colored(f"\tfinish processing {item_li_cnt}th item from product", "blue")
+
+    Print.colored(f"finish processing product page", "blue")
 
     return product_to_process
 
 
-def process_item_page(item_to_process):
-    print(f"start processing item page")
-
-    print(f"not implemented")
-    print(f"finish processing item page")
-    return item_to_process
-
-
 def close_jivo_site(driver):
     Print.rewrite()
-    print("trying to close jivo site")
+    if DEBUG:
+        print("trying to close jivo site")
     while True:
         try:
             element = WebDriverWait(driver, 10).until(
@@ -459,18 +457,25 @@ def close_jivo_site(driver):
         except (TimeoutException, MaxRetryError):
             pass
     Print.rewrite()
-    print("successfully closed jivo site")
+    if DEBUG:
+        print("successfully closed jivo site")
 
 
 def click_with_retries(element, name):
+    retry = 0
+    max_retries = 10
     clicked = False
     while not clicked:
+        retry += 1
         try:
-            print(f"trying to click {name}")
+            if DEBUG:
+                print(f"trying to click {name}")
             element.click()
             clicked = True
         except (ElementClickInterceptedException, ElementNotInteractableException) as e:
-            print(f"fuck. this. shit. error while clicking {name}: {e}")
+            print(f"error while clicking {name}: {e}")
+            if retry > max_retries:
+                raise e
             sleep_random(SLEEP_BETWEEN_BACKGROUND_ACTIONS)
 
 
@@ -521,8 +526,10 @@ def get_additional_product_page_info(driver):
     # Find all elements with class "tab_head_link"
     elements = driver.find_elements(By.CLASS_NAME, 'tab_head_link')
 
-    print(f"finding element from {len(elements)=}")
+    if DEBUG:
+        print(f"finding element from {len(elements)=}")
     # Filter the elements based on the "data-tab" attribute
+    element_to_find = 'characteristics'
     retry = 0
     max_retries = 10
     while True:
@@ -530,18 +537,19 @@ def get_additional_product_page_info(driver):
         desired_element = None
         for element in elements:
             data_tab = element.get_attribute('data-tab')
-            print(f"found element with {data_tab=}")
-            if data_tab == 'characteristics':
+            if DEBUG:
+                print(f"found element with {data_tab=}")
+            if data_tab == element_to_find:
                 desired_element = element
                 break  # successfully found element
 
         if desired_element:
-            print("yay!")
+            if DEBUG:
+                print(f"Found desired element {element_to_find}")
             # Do something with the desired element, like clicking or reading info
             desired_element.click()
             break  # successfully clicked element
         else:
-            print("nay :(")
             if retry > max_retries:
                 raise KeyError("Cannot find desired element with data-tab = offers")
             else:
@@ -559,8 +567,10 @@ def get_additional_product_page_info(driver):
     # Find all elements with class "tab_head_link"
     elements = driver.find_elements(By.CLASS_NAME, 'tab_head_link')
 
-    print(f"finding element from {len(elements)=}")
+    if DEBUG:
+        print(f"finding element from {len(elements)=}")
     # Filter the elements based on the "data-tab" attribute
+    element_to_find = 'offers'
     retry = 0
     max_retries = 10
     while True:
@@ -568,18 +578,19 @@ def get_additional_product_page_info(driver):
         desired_element = None
         for element in elements:
             data_tab = element.get_attribute('data-tab')
-            print(f"found element with {data_tab=}")
-            if data_tab == 'offers':
+            if DEBUG:
+                print(f"found element with {data_tab=}")
+            if data_tab == element_to_find:
                 desired_element = element
                 break  # successfully found element
 
         if desired_element:
-            print("yay!")
+            if DEBUG:
+                print(f"Found desired element {element_to_find}")
             # Do something with the desired element, like clicking or reading info
             desired_element.click()
             break  # successfully clicked element
         else:
-            print("nay :(")
             if retry > max_retries:
                 raise KeyError("Cannot find desired element with data-tab = offers")
             else:
@@ -589,12 +600,15 @@ def get_additional_product_page_info(driver):
         elements = driver.find_elements(By.CLASS_NAME, 'more__container')
 
         if len(elements) == 0:
-            print("no MOAR buttons found")
+            if DEBUG:
+                print("no MOAR buttons found")
             break  # nothing to search further
 
-        print(f'found {len(elements)} MOAR buttons, clicking dem al\'')
+        if DEBUG:
+            print(f'found {len(elements)} MOAR buttons, clicking dem al\'')
         for element_cnt, element in enumerate(elements):
-            print(f"clicking {element_cnt}st MOAR button")
+            if DEBUG:
+                print(f"clicking {element_cnt}st MOAR button")
             element.click()
             sleep_random(SLEEP_BETWEEN_ACTIONS, verbose=True)
 
@@ -603,13 +617,16 @@ def get_additional_product_page_info(driver):
     for element_cnt, element in enumerate(elements):
         # li_elements = element.find_elements(By.TAG_NAME, 'li')
         li_elements = element.find_elements(By.XPATH, '*')
-        print(f"found {len(li_elements)} li elements with items")
+        if DEBUG:
+            print(f"found {len(li_elements)} li elements with items")
         for li_cnt, li in enumerate(li_elements):
             sleep_random(SLEEP_BETWEEN_ACTIONS, verbose=True)
-            print(f"found {li_cnt}th li element, clicking")
+            if DEBUG:
+                print(f"found {li_cnt}th li element, clicking")
             driver.execute_script('arguments[0].scrollIntoView();', li)
             scroll_up_amount = Random.integer(-50, -100)
-            print(f"scroll up by {abs(scroll_up_amount)}")
+            if DEBUG:
+                print(f"scroll up by {abs(scroll_up_amount)}")
             driver.execute_script(f'window.scrollBy(0, {scroll_up_amount});')
             click_with_retries(li, f"{li_cnt}th li element")
             sleep_random(SLEEP_BETWEEN_ACTIONS, verbose=True)
@@ -644,13 +661,15 @@ def get_additional_product_page_info(driver):
 
             additional_info[li_cnt] = {"code": code, "picture": picture_link}
 
-            print(f"closing info popup")
+            if DEBUG:
+                print(f"closing info popup")
             # Find the element with both class names
             close_popup_element = driver.find_element(By.CSS_SELECTOR, '.modal_close_icon.modal_close')
             click_with_retries(close_popup_element, "popup")
             sleep_random(SLEEP_BETWEEN_ACTIONS, verbose=True)
             scroll_down_amount = Random.integer(400, 600)
-            print(f"scroll down by {scroll_down_amount}")
+            if DEBUG:
+                print(f"scroll down by {scroll_down_amount}")
             driver.execute_script(f'window.scrollBy(0, {scroll_down_amount});')
 
             # print("codes")
@@ -704,7 +723,7 @@ def get_hydrated_page_from_selenium(driver, url_to_hydrate, product_page=False):
 
 
 def main():
-    print("let's get this goin'")
+    Print.colored("Start processing", "green")
 
     url, paged_url, _ = Str.nl(File.read("url.txt"))
 
@@ -743,25 +762,23 @@ def main():
             Print.colored(f"Loaded {current_page} page, no products inside, exiting", "green")
             break  # no more pages with products
 
-        print()
-        print(f"{products_page.page_number=}")
-        print(f"{products_page.link=}")
-        print(f"{len(products_page.products)=}")
-        # print(f"{products_page.products[0]=}")
-        # print(f"{products_page.products[-1]=}")
-        print()
+        if DEBUG:
+            print()
+            print(f"{products_page.page_number=}")
+            print(f"{products_page.link=}")
+            print(f"{len(products_page.products)=}")
+            # print(f"{products_page.products[0]=}")
+            # print(f"{products_page.products[-1]=}")
+            print()
 
         for product_cnt, product in enumerate(products_page.products):
 
             product = process_product_page(driver, product)
 
-            print(f"{len(product.items)=}")
+            if DEBUG:
+                print(f"{len(product.items)=}")
 
             for item_cnt, item in enumerate(product.items):
-                item = process_item_page(item)
-
-                product.items[item_cnt] = item
-                # print(item)
                 items.append(item)
 
             products_page.products[product_cnt] = product
