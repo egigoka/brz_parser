@@ -24,6 +24,7 @@ HEADLESS = True
 FIRST_PAGE = 1
 LOAD_PAGES = None
 DEBUG = False
+MAX_RETRIES = 20
 
 
 def get_time_string():
@@ -355,11 +356,11 @@ def process_product_page(driver, product_to_process):
         if DEBUG:
             Print.debug(f"items_div = {items_div}")
 
-        max_retry = 10
+        max_retries = MAX_RETRIES
         is_empty = False
-        for retry in range(1, max_retry+1):
+        for retry in range(1, max_retries+1):
             if len(items_div.find_all()) == 0:
-                if retry >= max_retry:
+                if retry >= max_retries:
                     Print.colored(get_time_string(), f"\t\t{items_div_cnt}th items div is empty", "red")
                     is_empty = True
                     break
@@ -478,7 +479,7 @@ def close_jivo_site(driver):
 
 def click_with_retries(element, name):
     retry = 0
-    max_retries = 10
+    max_retries = MAX_RETRIES
     clicked = False
     while not clicked:
         retry += 1
@@ -505,7 +506,7 @@ def get_additional_product_page_info(driver):
         Print.debug(f'{info__info.get_attribute("innerHTML")=}')
 
     retry = 0
-    max_retry = 10
+    max_retries = MAX_RETRIES
     price = None
     while True:
         retry += 1
@@ -514,7 +515,7 @@ def get_additional_product_page_info(driver):
             price = info__info.find_element(By.CLASS_NAME, 'price')
             break  # successfully found element
         except NoSuchElementException:
-            if retry < max_retry:
+            if retry < max_retries:
                 sleep_random(SLEEP_BETWEEN_BACKGROUND_ACTIONS, verbose=True)
                 continue
             else:
@@ -545,7 +546,7 @@ def get_additional_product_page_info(driver):
     # Filter the elements based on the "data-tab" attribute
     element_to_find = 'characteristics'
     retry = 0
-    max_retries = 10
+    max_retries = MAX_RETRIES
     while True:
         retry += 1
         desired_element = None
@@ -586,7 +587,7 @@ def get_additional_product_page_info(driver):
     # Filter the elements based on the "data-tab" attribute
     element_to_find = 'offers'
     retry = 0
-    max_retries = 10
+    max_retries = MAX_RETRIES
     while True:
         retry += 1
         desired_element = None
@@ -656,7 +657,7 @@ def get_additional_product_page_info(driver):
                 raise ValueError(f"Found not exactly 1 code: found {len(possible_codes)}")
 
             retry = 0
-            max_retries = 10
+            max_retries = MAX_RETRIES
             picture_link = None
             while True:
                 retry += 1
@@ -702,7 +703,7 @@ def get_additional_product_page_info(driver):
 def get_hydrated_page_from_selenium(driver, url_to_hydrate, product_page=False):
     # Load the URL
     retry = 0
-    max_retries = 10
+    max_retries = MAX_RETRIES
     while True:
         retry += 1
         try:
